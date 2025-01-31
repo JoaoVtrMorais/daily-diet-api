@@ -47,5 +47,22 @@ def get_meal(id_meal):
     return jsonify({"message": "Refeição não encontrada."}), 404
 
 
+@app.route("/meals/meal/<int:id_meal>", methods=["PUT"])
+def update_meal(id_meal):
+    data = request.json
+    meal = Meal.query.get(id_meal)
+
+    if meal:
+        meal.name = data.get("name")
+        meal.description = data.get("description")
+        meal.date_time = datetime.strptime(data.get("date_time"), "%d/%m/%Y - %H:%M")
+        meal.in_diet = data.get("in_diet")
+        db.session.commit()
+
+        return jsonify({"message": f"Refeição {id_meal} atualizada com sucesso."})
+
+    return jsonify({"message": "Refeição não encontrada."}), 404
+
+
 if __name__ == "__main__":
     app.run(debug=True)
