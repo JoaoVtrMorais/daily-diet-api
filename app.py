@@ -8,7 +8,6 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "your_secret_key"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 
-
 db.init_app(app)
 # Session <- conexão ativa
 
@@ -60,6 +59,17 @@ def update_meal(id_meal):
         db.session.commit()
 
         return jsonify({"message": f"Refeição {id_meal} atualizada com sucesso."})
+
+    return jsonify({"message": "Refeição não encontrada."}), 404
+
+
+@app.route("/meals/meal/<int:id_meal>", methods=["DELETE"])
+def delete_meal(id_meal):
+    meal = Meal.query.get(id_meal)
+    if meal:
+        db.session.delete(meal)
+        db.session.commit()
+        return jsonify({"message": f"Refeição {id_meal} deletada com sucesso."})
 
     return jsonify({"message": "Refeição não encontrada."}), 404
 
