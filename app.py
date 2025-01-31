@@ -1,4 +1,4 @@
-from datetime import datetime 
+from datetime import datetime
 from flask import Flask, request, jsonify
 from models.meal import Meal
 from database import db
@@ -13,7 +13,7 @@ db.init_app(app)
 # Session <- conexão ativa
 
 
-@app.route("/meal", methods=["POST"])
+@app.route("/meals/meal", methods=["POST"])
 def create_meal():
     data = request.json
 
@@ -28,6 +28,23 @@ def create_meal():
     db.session.add(meal)
     db.session.commit()
     return jsonify({"message": "Refeição adicionada com sucesso."})
+
+
+@app.route("/meals", methods=["GET"])
+def get_meals():
+    meals = Meal.query.all()
+    meals_dict = [meal.to_dict() for meal in meals]
+    return jsonify(meals_dict)
+
+
+@app.route("/meals/meal/<int:id_meal>", methods=["GET"])
+def get_meal(id_meal):
+    meal = Meal.query.get(id_meal)
+
+    if meal:
+        return meal.to_dict()
+
+    return jsonify({"message": "Refeição não encontrada."}), 404
 
 
 if __name__ == "__main__":
